@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎄 彩色数字时钟 🎄</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            color: white;
+            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .clock-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 50px 40px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 500px;
+        }
+        
+        .title {
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            animation: pulse 2s infinite;
+        }
+        
+        .time {
+            font-size: 5em;
+            font-weight: bold;
+            margin: 25px 0;
+            text-shadow: 0 0 20px currentColor;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 5px;
+        }
+        
+        .date {
+            font-size: 1.8em;
+            margin: 15px 0;
+            opacity: 0.9;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .greeting {
+            font-size: 1.5em;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            display: inline-block;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* 手机端适配 */
+        @media (max-width: 600px) {
+            .clock-container {
+                min-width: 90%;
+                padding: 30px 20px;
+            }
+            .time {
+                font-size: 3em;
+            }
+            .date {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="clock-container">
+        <div class="title">🎄 彩色数字时钟 🎄</div>
+        <div class="time" id="time">00:00:00</div>
+        <div class="date" id="date">0000年00月00日 星期零</div>
+        <div class="greeting" id="greeting">加载中...</div>
+        <div class="footer">⏰ 实时更新 | 📱 手机电脑均可使用</div>
+    </div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            
+            // 更新时间
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            // 更新日期
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+            const weekday = weekdays[now.getDay()];
+            
+            // 问候语
+            const hour = now.getHours();
+            let greeting = '';
+            let emoji = '';
+            
+            if (hour < 5) {
+                greeting = '🌙 夜深了，早点休息哦';
+                emoji = '🌙';
+            } else if (hour < 8) {
+                greeting = '🌅 清晨好！新的一天开始啦';
+                emoji = '🌅';
+            } else if (hour < 12) {
+                greeting = '☀️ 上午好！工作学习加油';
+                emoji = '☀️';
+            } else if (hour < 14) {
+                greeting = '🍚 中午好！记得吃午饭';
+                emoji = '🍚';
+            } else if (hour < 18) {
+                greeting = '🌞 下午好！保持好心情';
+                emoji = '🌞';
+            } else if (hour < 22) {
+                greeting = '🌇 晚上好！放松一下吧';
+                emoji = '🌇';
+            } else {
+                greeting = '🌃 晚安，明天会更好';
+                emoji = '🌃';
+            }
+            
+            // 动态颜色（基于时间变化）
+            const colors = [
+                '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
+                '#FECA57', '#FF9FF3', '#54A0FF', '#5F27CD',
+                '#00D2D3', '#FF9F43', '#10AC84', '#EE5A24'
+            ];
+            const colorIndex = (now.getMinutes() * 60 + now.getSeconds()) % colors.length;
+            const color = colors[colorIndex];
+            
+            // 更新页面显示
+            document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}`;
+            document.getElementById('time').style.color = color;
+            document.getElementById('date').textContent = `${year}年${month}月${day}日 星期${weekday}`;
+            document.getElementById('greeting').innerHTML = `${emoji} ${greeting}`;
+            document.getElementById('greeting').style.color = color;
+        }
+        
+        // 每秒更新时钟
+        setInterval(updateClock, 1000);
+        
+        // 页面加载时立即显示
+        window.addEventListener('load', updateClock);
+        
+        // 添加点击特效
+        document.addEventListener('click', function() {
+            document.body.style.animation = 'none';
+            setTimeout(() => {
+                document.body.style.animation = 'gradient 15s ease infinite';
+            }, 10);
+        });
+    </script>
+</body>
+</html>
